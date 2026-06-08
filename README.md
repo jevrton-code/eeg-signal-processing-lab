@@ -5,7 +5,7 @@
 > preprocessing, epoching, and spectral analysis as a foundation for future
 > brain–computer interface (BCI) and neurotechnology work.
 
-![Status](https://img.shields.io/badge/status-v0.2%20first%20notebook-yellowgreen)
+![Status](https://img.shields.io/badge/status-v1.0%20signal%20lab-brightgreen)
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![Stack](https://img.shields.io/badge/stack-MNE--Python-7A4FE0)
 ![License](https://img.shields.io/badge/code%20license-MIT-green)
@@ -13,32 +13,63 @@
 
 ## Project Status
 
-**Version 0.2 — first reproducible notebook.** Building on the v0.1 scaffolding,
-this release adds the first end-to-end analysis:
-[`notebooks/01_eeg_signal_processing_lab.ipynb`](notebooks/01_eeg_signal_processing_lab.ipynb)
-loads subjects 1–3 (runs 1, 2, 4, 8, 12) via MNE's EEGBCI helper, confirms the
-dataset facts (64 EEG channels @ 160 Hz, per-run durations), maps the T0/T1/T2
-annotations **by run type**, and exports inspection figures to
-[`figures/`](figures/). The `eeg_lab` `config`, `data`, `preprocessing`
-(montage + run-aware events), and `visualization` modules are implemented for
-this stage. Conservative preprocessing (filtering/reference/ICA), epoching, and
-PSD/frequency analysis remain deferred — see [`ROADMAP.md`](ROADMAP.md).
+**Version 1.0 — a complete, reproducible EEG signal-processing lab.** The project
+takes a small, well-defined slice of the public PhysioNet motor movement/imagery
+data end to end: loading and raw inspection → conservative preprocessing →
+run-aware events and cue-locked epochs → spectral (PSD) baseline analysis → a
+self-contained HTML report. Two reproducible notebooks drive the analysis and
+call into the testable `eeg_lab` package:
+
+- [`notebooks/01_eeg_signal_processing_lab.ipynb`](notebooks/01_eeg_signal_processing_lab.ipynb)
+  — **loading & raw inspection** (subjects 1–3, runs 1, 2, 4, 8, 12; confirms
+  64 EEG channels @ 160 Hz; maps T0/T1/T2 **by run type**; first figures).
+- [`notebooks/02_preprocessing_epochs_psd.ipynb`](notebooks/02_preprocessing_epochs_psd.ipynb)
+  — **preprocessing, epochs & PSD** (standard_1005 montage, 1–40 Hz band-pass,
+  average reference; cue-locked epochs; eyes-open vs eyes-closed PSD baseline).
+
+The `eeg_lab` package (`config`, `data`, `preprocessing`, `spectral`,
+`visualization`, `report`) holds the pure, unit-tested logic. Classification,
+deep learning, and real-time control remain **intentionally deferred** — see
+[`ROADMAP.md`](ROADMAP.md).
 
 This is an educational, exploratory signal-processing project. **It is not a
 clinical or diagnostic tool and makes no medical claims.**
 
-### Run the first notebook
+### How to run
 
 ```bash
-# from an activated environment (see Setup below)
+# from an activated environment (see Setup below) — headless, end-to-end
 jupyter nbconvert --to notebook --execute --inplace \
-  notebooks/01_eeg_signal_processing_lab.ipynb   # headless, end-to-end
-# or open it interactively:
-jupyter lab notebooks/01_eeg_signal_processing_lab.ipynb
+  notebooks/01_eeg_signal_processing_lab.ipynb
+jupyter nbconvert --to notebook --execute --inplace \
+  notebooks/02_preprocessing_epochs_psd.ipynb
+
+# regenerate the self-contained HTML report from the exported figures
+python -m eeg_lab.report          # -> reports/eeg_signal_processing_report.html
+
+# run the unit tests (pure logic: event mapping, epoch math, bands, band power)
+pytest -q
 ```
 
-The first execution downloads ~15 small EDF files into the git-ignored
-`data/raw/` directory; later runs reuse the local cache.
+The first notebook execution downloads ~15 small EDF files into the git-ignored
+`data/raw/` directory; later runs reuse the local cache. The HTML report embeds
+all figures (~2 MB) and is **git-ignored / regenerated locally** — see
+[`reports/README.md`](reports/README.md). The source PNGs in
+[`figures/`](figures/) are committed.
+
+## Results at a glance
+
+| Figure | What it shows |
+| --- | --- |
+| ![Raw preview](figures/raw_signal_preview.png) | Raw EEG preview (subject 1, run 4) before any filtering. |
+| ![Montage](figures/channel_layout.png) | 64-channel `standard_1005` sensor layout. |
+| ![Before/after](figures/preprocessing_before_after.png) | Mean PSD before vs after the 1–40 Hz band-pass + average reference. The 60 Hz line peak is removed by the 40 Hz low-pass (so no notch is applied). |
+| ![Epochs](figures/epochs_example.png) | Condition-averaged cue-locked epochs on C3/Cz/C4 (small-sample, descriptive). |
+| ![PSD baseline](figures/psd_baseline_comparison.png) | Grand-average occipital PSD: the **expected** eyes-closed alpha (8–13 Hz) increase appears clearly. |
+| ![Topomap](figures/band_topomap_eyes_closed.png) | Alpha/beta band-power topography (eyes closed); alpha concentrates posteriorly as expected. |
+
+All observations are descriptive and tied to subjects 1–3 / runs 1, 2, 4, 8, 12.
+See [`docs/limitations.md`](docs/limitations.md).
 
 ## Why This Project
 
@@ -102,20 +133,25 @@ eeg-signal-processing-lab/
     dataset_notes.md         # Dataset facts, run table, event mapping
     preprocessing_decisions.md  # Conservative preprocessing decision log
     limitations.md           # Honest limitations
-  src/eeg_lab/               # Python package (documented stubs in v0.1)
+  src/eeg_lab/               # Python package (pure, testable logic)
     __init__.py
-    config.py                # Subjects/runs/paths + event-mapping conventions
+    config.py                # Subjects/runs/paths, event mapping, filter/epoch/band constants
     data.py                  # MNE EEGBCI loading helpers
-    preprocessing.py         # Conservative preprocessing + run-aware events
+    preprocessing.py         # Conservative preprocessing + run-aware events/epochs
+    spectral.py              # PSD + band-power helpers
     visualization.py         # Figure helpers
-    report.py                # Reproducible report assembly
-  tests/                     # Minimal placeholder tests
+    report.py                # Reproducible HTML report assembly
+  tests/                     # Unit tests (pure logic only; no network/data needed)
     test_dataset_config.py
     test_event_mapping.py
-  notebooks/                 # Reproducible notebooks (added in v0.2)
-  reports/                   # Generated HTML reports (added later)
-  figures/                   # Exported figures (added later)
-  data/raw/                  # Local downloaded EEG data (GIT-IGNORED, not created)
+    test_epochs.py           # epoch window, event_id, count tables
+    test_spectral.py         # band definitions, band-power integration
+  notebooks/
+    01_eeg_signal_processing_lab.ipynb     # loading & raw inspection
+    02_preprocessing_epochs_psd.ipynb      # preprocessing, epochs & PSD
+  reports/                   # HTML report regenerated locally (README + .gitkeep tracked)
+  figures/                   # Exported PNG figures (committed)
+  data/raw/                  # Local downloaded EEG data (GIT-IGNORED)
 ```
 
 ## Setup / Installation
@@ -142,9 +178,9 @@ pip install -r requirements.txt    # runtime deps only
 
 ### Where data lives
 
-EEG recordings are **not** part of this repository. When the analysis is
-implemented, MNE-Python's EEGBCI helper downloads selected subject/run files
-into a local, git-ignored directory:
+EEG recordings are **not** part of this repository. MNE-Python's EEGBCI helper
+downloads selected subject/run files into a local, git-ignored directory on
+first run:
 
 ```text
 data/raw/    # downloaded EDF files (gitignored — never committed)
@@ -153,21 +189,26 @@ data/raw/    # downloaded EDF files (gitignored — never committed)
 `data/` and common EEG formats (`*.edf`, `*.fif`, ...) are excluded via
 [`.gitignore`](.gitignore), so raw signals cannot be accidentally committed.
 
-## Planned Pipeline
+## Pipeline
 
-1. Select subjects and runs.
-2. Load EEG recordings via MNE EEGBCI.
-3. Inspect raw signals (channels, sampling rate, duration, quality notes).
-4. Apply montage and reference decisions.
-5. Apply conservative filtering.
-6. Parse events and map labels **by run type**.
-7. Create epochs with a stated window.
-8. Generate PSD and frequency-band summaries.
-9. Assemble a reproducible report and figures.
-10. Document limitations and next steps.
+1. Select subjects and runs (subjects 1–3; runs 1, 2, 4, 8, 12).
+2. Load EEG recordings via MNE EEGBCI (`eeg_lab.data`).
+3. Inspect raw signals — channels, sampling rate, duration, montage (notebook 01).
+4. Apply conservative preprocessing — `standard_1005` montage, **1–40 Hz**
+   band-pass, **average** reference; notch inspected and deferred (covered by the
+   40 Hz low-pass); ICA deferred (`eeg_lab.preprocessing`).
+5. Parse events and map labels **by run type** (T0 = rest; T1/T2 = left/right
+   imagined fist only in runs 4, 8, 12); build per-condition count tables.
+6. Create cue-locked epochs with a stated window (**−0.5 to +4.0 s**, baseline
+   `(None, 0)`).
+7. Generate PSD summaries — eyes-open vs eyes-closed baseline (`eeg_lab.spectral`)
+   and optional alpha/beta topomaps.
+8. Assemble a reproducible HTML report and curated figures (`eeg_lab.report`).
+9. Document every decision and the limitations.
 
 Each stage and its acceptance criteria are tracked in
-[`ROADMAP.md`](ROADMAP.md).
+[`ROADMAP.md`](ROADMAP.md); preprocessing parameters and rationale are in
+[`docs/preprocessing_decisions.md`](docs/preprocessing_decisions.md).
 
 ## What This Project Shows
 

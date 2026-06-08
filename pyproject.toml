@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "eeg-signal-processing-lab"
-version = "0.1.0"
+version = "1.0.0"
 description = "Reproducible EEG signal-processing lab using public PhysioNet motor movement/imagery data (MNE-Python). Foundation for BCI and neurotechnology work."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -22,7 +22,7 @@ keywords = [
     "open-science",
 ]
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",

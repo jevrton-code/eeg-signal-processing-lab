@@ -41,6 +41,21 @@ apply and should be kept in mind when reading any current or future results.
 ## Reproducibility caveats
 
 - Results depend on dataset version (1.0.0), the exact runs/subjects selected,
-  and the documented preprocessing parameters. Changing any of these can change
-  the output.
-- As of v0.1, no analysis has been run; this is scaffolding only.
+  and the documented preprocessing parameters (band-pass 1–40 Hz, average
+  reference, epoch window −0.5 to +4.0 s). Changing any of these can change the
+  output.
+- The analysis is reproducible from the two notebooks plus the `eeg_lab`
+  package; figures are exported to `figures/` and the HTML report is regenerated
+  locally (see `reports/README.md`).
+
+## Specific to the v1.0 results
+
+- The eyes-closed occipital alpha increase observed here (grand-average
+  eyes-closed/eyes-open alpha ratio ≈ 19 over subjects 1–3) is an **expected
+  physiological pattern**, reported descriptively. It is not a clinical finding
+  and its magnitude should not be generalized beyond this sample.
+- Condition-averaged epochs use only ~7–14 trials per condition in a single run,
+  so they are noisy; they demonstrate that epoching/labeling work, not an
+  established evoked effect.
+- No bad channels were excluded and no ICA was performed; residual eye/movement
+  artifacts remain in the data by design (transparency over aggressive cleaning).

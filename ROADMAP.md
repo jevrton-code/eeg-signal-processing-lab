@@ -9,22 +9,33 @@ adds reproducible analysis stage by stage, keeping scope tight.
 - **v0.1 — scaffolding / foundation: ✅ complete.**
   Repository structure, documentation, dependency manifest, citation, license,
   and roadmap.
-- **v0.2 — first reproducible notebook: ✅ complete (this release).**
+- **v0.2 — first reproducible notebook: ✅ complete.**
   `notebooks/01_eeg_signal_processing_lab.ipynb` loads subjects 1–3, runs
   1, 2, 4, 8, 12 via MNE's EEGBCI helper, confirms 64 EEG channels @ 160 Hz and
   per-run durations, maps T0/T1/T2 **by run type**, and exports first inspection
-  figures to `figures/`. The `config`, `data`, `preprocessing` (montage +
-  run-aware events), and `visualization` modules are now implemented for this
-  stage; filtering/reference/ICA, epoching, and PSD remain stubbed/deferred.
+  figures to `figures/`.
+- **v0.3 — preprocessing & events/epochs/PSD: ✅ complete.**
+  `notebooks/02_preprocessing_epochs_psd.ipynb` applies the conservative
+  pipeline (standard_1005 montage, 1–40 Hz band-pass, average reference; notch
+  inspected but deferred; ICA deferred), builds cue-locked epochs
+  (−0.5 to +4.0 s) from the run-aware mapping with event-count tables, and
+  computes the eyes-open vs eyes-closed PSD baseline (the expected occipital
+  alpha increase is reproduced) plus optional band topomaps. `preprocessing` and
+  a new `spectral` module are implemented and unit-tested.
+- **v1.0 — polished release: ✅ complete (this release).**
+  `eeg_lab.report` assembles a self-contained HTML report from the committed
+  figures (regenerated locally — see `reports/README.md`). Docs, limitations,
+  and README are finalized; the full test suite is green and both notebooks run
+  end-to-end. Classification / deep learning remain intentionally deferred.
 
 ## Versioning plan
 
 | Version | Theme | Contents |
 | --- | --- | --- |
 | **v0.1** | Structure & docs | Repo skeleton, README, dataset notes, citation, license, roadmap, stubs. |
-| **v0.2** | First reproducible notebook | Load selected files via MNE EEGBCI, inspect raw signals, first figures. **(current)** |
-| **v0.3** | Preprocessing & events/epochs | Conservative preprocessing applied + documented, run-aware event mapping, epochs, event-count tables. |
-| **v1.0** | Polished release | PSD/frequency summaries, HTML report, curated figures, finalized limitations, GitHub-ready README. |
+| **v0.2** | First reproducible notebook | Load selected files via MNE EEGBCI, inspect raw signals, first figures. |
+| **v0.3** | Preprocessing & events/epochs | Conservative preprocessing applied + documented, run-aware event mapping, epochs, event-count tables, PSD baseline. |
+| **v1.0** | Polished release | PSD/frequency summaries, HTML report, curated figures, finalized limitations, GitHub-ready README. **(current)** |
 
 ## Milestones (from the backlog)
 
@@ -47,19 +58,23 @@ summarize the channel layout. Delivered in
 (`raw_signal_preview.png`, `channel_layout.png`, `event_distribution.png`,
 `events_timeline_subject1_run4.png`).
 
-### M4 — Preprocessing ⏳ (v0.3)
-Define and apply conservative preprocessing (montage, reference, filtering),
-with rationale and before/after notes. Decide whether ICA belongs in v1 (default:
-deferred).
+### M4 — Preprocessing ✅ (v0.3)
+Applied conservative preprocessing (standard_1005 montage, 1–40 Hz band-pass,
+average reference) with rationale and a before/after PSD figure. ICA deferred
+with written rationale; notch inspected and deferred (covered by the 40 Hz
+low-pass). See `docs/preprocessing_decisions.md`.
 
-### M5 — Events, epochs, and frequency analysis ⏳ (v0.3 → v1.0)
-Extract and summarize events (T0/T1/T2 by run type), create epochs with a stated
-window, and compute PSD summaries (eyes-open vs eyes-closed baseline, optional
-motor-imagery comparison).
+### M5 — Events, epochs, and frequency analysis ✅ (v0.3)
+Run-aware event extraction with per-condition count tables, cue-locked epochs
+(−0.5 to +4.0 s, baseline `(None, 0)`), and PSD summaries: eyes-open vs
+eyes-closed baseline (expected occipital alpha increase reproduced) plus optional
+alpha/beta topomaps. Delivered in `notebooks/02_preprocessing_epochs_psd.ipynb`
+with figures in `figures/`.
 
-### M6 — Documentation and GitHub polish ⏳ (v1.0)
-Final README, generated report, curated figures, limitations page, and final QA
-(no raw data in Git, citations complete, reproducibility verified).
+### M6 — Documentation and GitHub polish ✅ (v1.0)
+Final README, generated HTML report (`eeg_lab.report`; regenerated locally per
+`reports/README.md`), curated figures, finalized limitations page, and final QA
+(no raw data in Git, citations complete, reproducibility verified, tests green).
 
 ## Deferred / future work (explicitly out of scope for v1)
 

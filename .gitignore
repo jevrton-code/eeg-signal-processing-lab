@@ -62,6 +62,13 @@ Thumbs.db
 *~
 
 # ---------------------------------------------------------------------------
+# Generated reports — the self-contained HTML embeds all figures and exceeds
+# the repo's ~2 MB commit threshold, so it is regenerated locally rather than
+# committed. See reports/README.md. (The small PNGs in figures/ ARE committed.)
+# ---------------------------------------------------------------------------
+reports/*.html
+
+# ---------------------------------------------------------------------------
 # Keep tracked placeholder files in otherwise-empty tracked dirs.
 # (data/ stays ignored on purpose; do not unignore it.)
 # ---------------------------------------------------------------------------
