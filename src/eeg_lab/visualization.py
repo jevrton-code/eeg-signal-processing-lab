@@ -282,3 +282,67 @@ def plot_epochs_overview(
     fig.suptitle(title or "Condition-averaged epochs (cue-locked)")
     fig.tight_layout()
     return fig
+
+
+def plot_psd_baseline_comparison(
+    freqs,
+    psd_eyes_open,
+    psd_eyes_closed,
+    *,
+    picks_label: str = "occipital channels",
+    shade_band: tuple[float, float] = config.ALPHA_BAND,
+    title: str | None = None,
+):
+    """Plot eyes-open vs eyes-closed PSD curves (dB) with a shaded alpha band.
+
+    The curves are PSDs (V²/Hz) already averaged across the channels of
+    interest; they are displayed in dB (10·log10). The shaded band marks the
+    alpha range where an eyes-closed power increase is *expected*.
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+    """
+    freqs = np.asarray(freqs)
+    eo_db = 10.0 * np.log10(np.asarray(psd_eyes_open))
+    ec_db = 10.0 * np.log10(np.asarray(psd_eyes_closed))
+
+    fig, ax = plt.subplots(figsize=(10, 5.5))
+    ax.axvspan(
+        shade_band[0], shade_band[1], color="C2", alpha=0.12,
+        label=f"alpha {shade_band[0]:.0f}-{shade_band[1]:.0f} Hz",
+    )
+    ax.plot(freqs, eo_db, color="C0", linewidth=1.4, label="Eyes open (run 1)")
+    ax.plot(freqs, ec_db, color="C3", linewidth=1.4, label="Eyes closed (run 2)")
+    ax.set_xlabel("Frequency (Hz)")
+    ax.set_ylabel(f"PSD (dB re V²/Hz, mean over {picks_label})")
+    ax.set_title(title or "Baseline PSD: eyes-open vs eyes-closed")
+    ax.legend(loc="upper right", fontsize=9)
+    fig.tight_layout()
+    return fig
+
+
+def plot_band_topomap(
+    spectrum,
+    *,
+    bands: dict | None = None,
+    title: str | None = None,
+):
+    """Plot frequency-band topomaps from an MNE ``Spectrum`` (optional summary).
+
+    Requires a montage on the underlying instance. ``bands`` maps a display name
+    to ``(fmin, fmax)``; defaults to alpha and beta.
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+    """
+    if bands is None:
+        bands = {
+            f"Alpha ({config.ALPHA_BAND[0]:.0f}-{config.ALPHA_BAND[1]:.0f} Hz)": config.ALPHA_BAND,
+            f"Beta ({config.BETA_BAND[0]:.0f}-{config.BETA_BAND[1]:.0f} Hz)": config.BETA_BAND,
+        }
+    fig = spectrum.plot_topomap(bands=bands, normalize=True, show=False)
+    if title:
+        fig.suptitle(title)
+    return fig
