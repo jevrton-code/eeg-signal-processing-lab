@@ -8,14 +8,15 @@ units, and legends.
 
 Status
 ------
-Version 0.2. The inspection figures used by the first reproducible notebook are
-implemented: a raw signal preview, a sensor/channel montage layout, an
-events/condition distribution summary, and a single-run events timeline. PSD
-and topographic summaries remain deferred to a later stage.
+Version 0.3. Adds, on top of the v0.2 inspection figures (raw preview, montage
+layout, event distribution, events timeline): a before/after band-pass PSD
+comparison, a condition-averaged epochs overview, a baseline PSD comparison
+(eyes-open vs eyes-closed), and an optional band-power topomap.
 """
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -193,5 +194,91 @@ def plot_events_timeline(
     subj_str = f"subject {subject}, " if subject is not None else ""
     ax.set_title(title or f"Events timeline ({subj_str}run {run}: {config.run_role(run)})")
     ax.legend(loc="upper right", fontsize=8, ncol=len(conditions))
+    fig.tight_layout()
+    return fig
+
+
+def _mean_psd_db(raw, *, fmin: float, fmax: float):
+    """Return (freqs, mean-over-EEG-channels PSD in dB) for a raw recording."""
+    spectrum = raw.compute_psd(method="welch", fmin=fmin, fmax=fmax, picks="eeg", verbose=False)
+    psds, freqs = spectrum.get_data(return_freqs=True)
+    mean_psd = psds.mean(axis=0)
+    return freqs, 10.0 * np.log10(mean_psd)
+
+
+def plot_filter_psd_comparison(
+    raw_before: mne.io.BaseRaw,
+    raw_after: mne.io.BaseRaw,
+    *,
+    fmin: float = 1.0,
+    fmax: float = 80.0,
+    title: str | None = None,
+):
+    """Plot the mean PSD before vs after band-pass filtering as before/after evidence.
+
+    Power spectral density is averaged across EEG channels and shown in dB
+    (10·log10 of V²/Hz). The configured low-pass edge is marked so the effect of
+    the filter (and the suppression of any high-frequency / line noise) is
+    visible.
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+    """
+    freqs_b, psd_b = _mean_psd_db(raw_before, fmin=fmin, fmax=fmax)
+    freqs_a, psd_a = _mean_psd_db(raw_after, fmin=fmin, fmax=fmax)
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.plot(freqs_b, psd_b, color="0.5", linewidth=1.2, label="Before (raw)")
+    ax.plot(freqs_a, psd_a, color="C3", linewidth=1.2, label="After (1-40 Hz band-pass, avg ref)")
+    ax.axvline(config.FILTER_H_FREQ_HZ, color="C0", linestyle="--", linewidth=0.9,
+               label=f"low-pass {config.FILTER_H_FREQ_HZ:.0f} Hz")
+    ax.axvline(config.LINE_FREQ_HZ, color="0.7", linestyle=":", linewidth=0.9,
+               label=f"line {config.LINE_FREQ_HZ:.0f} Hz")
+    ax.set_xlabel("Frequency (Hz)")
+    ax.set_ylabel("Power spectral density (dB, mean over EEG channels)")
+    ax.set_title(title or "PSD before vs after conservative preprocessing")
+    ax.legend(loc="upper right", fontsize=8)
+    fig.tight_layout()
+    return fig
+
+
+def plot_epochs_overview(
+    epochs: mne.Epochs,
+    *,
+    picks: Sequence[str] = ("C3", "Cz", "C4"),
+    title: str | None = None,
+):
+    """Plot condition-averaged epoch traces for a few motor-relevant channels.
+
+    For each requested channel, the per-condition average (evoked) is overlaid,
+    with a marker at the cue onset (t = 0). This is an *example-epochs* view: a
+    cue-locked average over a small sample, shown descriptively (not as an
+    established effect).
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+    """
+    available = [ch for ch in picks if ch in epochs.ch_names]
+    if not available:
+        available = epochs.ch_names[:3]
+    times = epochs.times
+    fig, axes = plt.subplots(1, len(available), figsize=(4.2 * len(available), 4.2), sharey=True)
+    if len(available) == 1:
+        axes = [axes]
+    for ax, ch in zip(axes, available):
+        for i, cond in enumerate(epochs.event_id):
+            if len(epochs[cond]) == 0:
+                continue
+            evoked = epochs[cond].average()
+            data = evoked.get_data(picks=[ch])[0] * _VOLT_TO_UV
+            ax.plot(times, data, color=f"C{i}", linewidth=1.0, label=cond)
+        ax.axvline(0.0, color="0.6", linestyle="--", linewidth=0.8)
+        ax.set_title(ch)
+        ax.set_xlabel("Time (s)")
+    axes[0].set_ylabel("Average amplitude (µV)")
+    axes[-1].legend(loc="upper right", fontsize=7)
+    fig.suptitle(title or "Condition-averaged epochs (cue-locked)")
     fig.tight_layout()
     return fig

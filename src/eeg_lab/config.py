@@ -14,9 +14,13 @@ keyed by run number, never by raw event code alone.
 
 Status
 ------
-Version 0.2. The constants and run-aware event mapping used by the first
-reproducible inspection notebook are implemented here. Heavier configuration
-objects (epoch windows, band definitions) remain documented for later stages.
+Version 0.3. In addition to the v0.2 dataset constants and run-aware event
+mapping, this module now defines the conservative preprocessing parameters
+(filter band, reference), the cue-locked epoch window/baseline, the canonical
+annotation-code integer codes, and the frequency-band definitions used by the
+preprocessing, epoching, and spectral stages. These are kept here as small,
+testable constants/pure functions so notebooks call into ``eeg_lab`` rather than
+re-deriving them.
 """
 
 from __future__ import annotations
@@ -110,6 +114,86 @@ def map_events_by_run(run: int) -> dict[str, str]:
         f"Run {run} is not part of the version 1 slice {RUNS}. "
         "Event meaning is run-dependent; refusing to guess a mapping."
     )
+
+
+# ---------------------------------------------------------------------------
+# Conservative preprocessing parameters (v0.3). See
+# docs/preprocessing_decisions.md for the rationale behind each value.
+# ---------------------------------------------------------------------------
+# Gentle band-pass for general inspection / spectral work. 1 Hz high-pass
+# removes slow drifts; 40 Hz low-pass keeps alpha/beta and stays below the
+# 80 Hz Nyquist (160 Hz sampling). The 40 Hz low-pass also attenuates the
+# 60 Hz US line frequency, which is why a notch is not applied by default.
+FILTER_L_FREQ_HZ: float = 1.0
+FILTER_H_FREQ_HZ: float = 40.0
+
+# EEG reference applied for spectral/topographic summaries. Average reference is
+# a documented convention (not ground truth); the original reference is kept for
+# raw inspection (notebook 01).
+EEG_REFERENCE: str = "average"
+
+# Power-line frequency for the dataset's acquisition region (PhysioNet, US).
+# Inspected via PSD before deciding on a notch (see decision log); not applied
+# by default because the 40 Hz low-pass already removes it.
+LINE_FREQ_HZ: float = 60.0
+
+# ---------------------------------------------------------------------------
+# Cue-locked epoch window (v0.3).
+# ---------------------------------------------------------------------------
+# Motor-imagery cues (T1/T2) annotate ~4.1 s task periods. A conservative
+# cue-locked window captures a short pre-cue baseline and the task period.
+EPOCH_TMIN_S: float = -0.5
+EPOCH_TMAX_S: float = 4.0
+# Baseline correction window: from epoch start up to the cue onset (t = 0).
+EPOCH_BASELINE: tuple[float | None, float | None] = (None, 0.0)
+
+# Canonical integer codes for the EDF annotation codes. MNE's
+# ``events_from_annotations`` assigns the same ascending order when these codes
+# are present, so these constants let pure logic build epoch ``event_id`` maps
+# without loading data.
+EVENT_CODE_TO_INT: dict[str, int] = {"T0": 1, "T1": 2, "T2": 3}
+
+# ---------------------------------------------------------------------------
+# Frequency-band definitions (Hz), within the 1-40 Hz analysis band (v0.3).
+# Contiguous, non-overlapping bands using common EEG conventions.
+# ---------------------------------------------------------------------------
+FREQ_BANDS: dict[str, tuple[float, float]] = {
+    "delta": (1.0, 4.0),
+    "theta": (4.0, 8.0),
+    "alpha": (8.0, 13.0),
+    "beta": (13.0, 30.0),
+    "gamma": (30.0, 40.0),
+}
+# Convenience aliases for the bands most relevant to motor imagery / arousal.
+ALPHA_BAND: tuple[float, float] = FREQ_BANDS["alpha"]
+BETA_BAND: tuple[float, float] = FREQ_BANDS["beta"]
+
+# PSD computation range (Hz) for spectral summaries.
+PSD_FMIN_HZ: float = 1.0
+PSD_FMAX_HZ: float = 40.0
+
+
+def epoch_window() -> tuple[float, float]:
+    """Return the cue-locked epoch window ``(tmin, tmax)`` in seconds.
+
+    The window starts before the cue onset (``tmin < 0``) to provide a pre-cue
+    baseline and extends to cover the ~4 s motor-imagery task period.
+    """
+    return (EPOCH_TMIN_S, EPOCH_TMAX_S)
+
+
+def build_condition_event_id(run: int) -> dict[str, int]:
+    """Build the run-aware ``event_id`` mapping (condition label -> int) for epochs.
+
+    Combines the run-aware code->label mapping (:func:`map_events_by_run`) with
+    the canonical code->int codes (:data:`EVENT_CODE_TO_INT`). The result maps a
+    descriptive condition label to the integer event code MNE will assign, so it
+    can be passed directly as ``event_id`` to :class:`mne.Epochs`.
+
+    Pure logic (no data access), so it is unit-testable.
+    """
+    mapping = map_events_by_run(run)
+    return {label: EVENT_CODE_TO_INT[code] for code, label in mapping.items()}
 
 
 def get_dataset_config() -> dict:
