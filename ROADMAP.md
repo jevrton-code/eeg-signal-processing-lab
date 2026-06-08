@@ -1,8 +1,8 @@
 # Roadmap
 
-This roadmap distills the milestones in `docs/03_BACKLOG.md` into a versioned
-plan. The project deliberately starts with structure and documentation, then
-adds reproducible analysis stage by stage, keeping scope tight.
+This roadmap tracks the versioned release plan. The project deliberately starts
+with structure and documentation, then adds reproducible analysis stage by stage,
+keeping scope tight.
 
 ## Current status
 
@@ -24,15 +24,15 @@ adds reproducible analysis stage by stage, keeping scope tight.
   a new `spectral` module are implemented and unit-tested.
 - **v1.0 — polished release: ✅ complete (this release).**
   `eeg_lab.report` assembles a self-contained HTML report from the committed
-  figures (regenerated locally — see `reports/README.md`). Docs, limitations,
-  and README are finalized; the full test suite is green and both notebooks run
+  figures (regenerated locally — see `reports/README.md`). README, limitations,
+  and report text are finalized; the full test suite is green and both notebooks run
   end-to-end. Classification / deep learning remain intentionally deferred.
 
 ## Versioning plan
 
 | Version | Theme | Contents |
 | --- | --- | --- |
-| **v0.1** | Structure & docs | Repo skeleton, README, dataset notes, citation, license, roadmap, stubs. |
+| **v0.1** | Structure & documentation | Repo skeleton, README, dataset notes, citation, license, roadmap, stubs. |
 | **v0.2** | First reproducible notebook | Load selected files via MNE EEGBCI, inspect raw signals, first figures. |
 | **v0.3** | Preprocessing & events/epochs | Conservative preprocessing applied + documented, run-aware event mapping, epochs, event-count tables, PSD baseline. |
 | **v1.0** | Polished release | PSD/frequency summaries, HTML report, curated figures, finalized limitations, GitHub-ready README. **(current)** |
@@ -45,7 +45,7 @@ public narrative (EEG / BCI / neurotechnology / reproducibility).
 
 ### M1 — Dataset foundation ✅ (documented in v0.1)
 Document dataset facts, the version 1 subject/run subset, and the run-aware
-event mapping table. See `docs/dataset_notes.md`.
+event mapping table in the README and configuration.
 
 ### M2 — Repository setup ✅ (v0.1)
 Repository skeleton, dependency plan (`pyproject.toml` / `requirements.txt`),
@@ -62,7 +62,7 @@ summarize the channel layout. Delivered in
 Applied conservative preprocessing (standard_1005 montage, 1–40 Hz band-pass,
 average reference) with rationale and a before/after PSD figure. ICA deferred
 with written rationale; notch inspected and deferred (covered by the 40 Hz
-low-pass). See `docs/preprocessing_decisions.md`.
+low-pass). Rationale is summarized in the README pipeline and generated report.
 
 ### M5 — Events, epochs, and frequency analysis ✅ (v0.3)
 Run-aware event extraction with per-condition count tables, cue-locked epochs

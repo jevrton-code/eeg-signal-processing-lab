@@ -69,7 +69,7 @@ all figures (~2 MB) and is **git-ignored / regenerated locally** — see
 | ![Topomap](figures/band_topomap_eyes_closed.png) | Alpha/beta band-power topography (eyes closed); alpha concentrates posteriorly as expected. |
 
 All observations are descriptive and tied to subjects 1–3 / runs 1, 2, 4, 8, 12.
-See [`docs/limitations.md`](docs/limitations.md).
+The main limitations are summarized below.
 
 ## Why This Project
 
@@ -100,8 +100,9 @@ Primary dataset: **PhysioNet EEG Motor Movement/Imagery Dataset v1.0.0**.
 
 The dataset is accessed locally through MNE-Python's
 [EEGBCI dataset helper](https://mne.tools/dev/generated/mne.datasets.eegbci.load_data.html).
-Full run/event details (including the run-aware meaning of T0/T1/T2) are in
-[`docs/dataset_notes.md`](docs/dataset_notes.md).
+The annotation labels are interpreted by run type: T0 is rest, while T1/T2 map
+to left/right imagined fist only in the selected motor-imagery runs 4, 8, and
+12.
 
 **Raw dataset files are never committed to this repository.** Downloaded data
 is written to a local, git-ignored `data/raw/` directory (see Setup).
@@ -113,8 +114,8 @@ is written to a local, git-ignored `data/raw/` directory (see Setup).
   imagery, left vs right hand)
 
 This is small enough to run quickly while still demonstrating baseline
-comparison and motor-imagery inspection. Rationale is documented in
-[`docs/project_brief.md`](docs/project_brief.md).
+comparison and motor-imagery inspection without turning the first release into a
+full benchmark.
 
 ## Repository Structure
 
@@ -127,12 +128,6 @@ eeg-signal-processing-lab/
   pyproject.toml             # Project metadata + planned dependencies
   requirements.txt           # Convenience mirror of runtime dependencies
   .gitignore                 # Ignores raw data, EDF files, caches, envs
-  docs/
-    00_*..05_*.md            # Original planning files (source of truth)
-    project_brief.md         # Public-facing condensed brief
-    dataset_notes.md         # Dataset facts, run table, event mapping
-    preprocessing_decisions.md  # Conservative preprocessing decision log
-    limitations.md           # Honest limitations
   src/eeg_lab/               # Python package (pure, testable logic)
     __init__.py
     config.py                # Subjects/runs/paths, event mapping, filter/epoch/band constants
@@ -207,8 +202,8 @@ data/raw/    # downloaded EDF files (gitignored — never committed)
 9. Document every decision and the limitations.
 
 Each stage and its acceptance criteria are tracked in
-[`ROADMAP.md`](ROADMAP.md); preprocessing parameters and rationale are in
-[`docs/preprocessing_decisions.md`](docs/preprocessing_decisions.md).
+[`ROADMAP.md`](ROADMAP.md). Preprocessing parameters and rationale are summarized
+in the pipeline above and in the generated report.
 
 ## What This Project Shows
 
@@ -220,10 +215,14 @@ Each stage and its acceptance criteria are tracked in
 
 ## Limitations
 
-The first versions use a small subject subset; preprocessing choices are
-educational and exploratory; results should not be generalized; no medical or
-diagnostic interpretation is provided; and classification is reserved for
-future work. Full details in [`docs/limitations.md`](docs/limitations.md).
+- The version 1 analysis uses only subjects 1-3 and runs 1, 2, 4, 8, 12.
+- Results are descriptive observations for this subset, not general claims about
+  the full 109-subject dataset.
+- Preprocessing choices are educational and exploratory, chosen for
+  transparency rather than optimized performance.
+- No medical, clinical, or diagnostic interpretation is provided or implied.
+- No classifier, deep learning model, real-time control, or hardware integration
+  is included in version 1.
 
 ## License and Citation
 

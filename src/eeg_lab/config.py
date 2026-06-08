@@ -9,7 +9,7 @@ rather than being scattered across notebooks.
 Important convention
 --------------------
 Event labels T1/T2 are NOT globally fixed. Their meaning depends on the run
-type (see ``docs/dataset_notes.md``). Any event mapping defined here must be
+type (see the README dataset section). Any event mapping defined here must be
 keyed by run number, never by raw event code alone.
 
 Status
@@ -28,7 +28,7 @@ from __future__ import annotations
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
-# Version 1 analysis slice (see docs/project_brief.md and docs/dataset_notes.md).
+# Version 1 analysis slice (see README dataset and pipeline sections).
 # ---------------------------------------------------------------------------
 SUBJECTS: tuple[int, ...] = (1, 2, 3)
 RUNS: tuple[int, ...] = (1, 2, 4, 8, 12)
@@ -118,7 +118,7 @@ def map_events_by_run(run: int) -> dict[str, str]:
 
 # ---------------------------------------------------------------------------
 # Conservative preprocessing parameters (v0.3). See
-# docs/preprocessing_decisions.md for the rationale behind each value.
+# README pipeline section and generated report for the rationale behind each value.
 # ---------------------------------------------------------------------------
 # Gentle band-pass for general inspection / spectral work. 1 Hz high-pass
 # removes slow drifts; 40 Hz low-pass keeps alpha/beta and stays below the

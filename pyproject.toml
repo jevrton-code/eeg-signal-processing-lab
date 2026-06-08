@@ -52,8 +52,8 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/eeg-signal-processing-lab/eeg-signal-processing-lab"
-Documentation = "https://github.com/eeg-signal-processing-lab/eeg-signal-processing-lab/tree/main/docs"
+Homepage = "https://github.com/jevrton-code/eeg-signal-processing-lab"
+Documentation = "https://github.com/jevrton-code/eeg-signal-processing-lab#readme"
 Dataset = "https://physionet.org/content/eegmmidb/1.0.0/"
 
 [tool.hatch.build.targets.wheel]

@@ -9,7 +9,7 @@ from eeg_lab import config
 
 
 def test_version_one_subject_selection():
-    # v1 slice: subjects 1, 2, 3 (see docs/project_brief.md).
+    # v1 slice: subjects 1, 2, 3 (see README dataset section).
     assert config.SUBJECTS == (1, 2, 3)
 
 

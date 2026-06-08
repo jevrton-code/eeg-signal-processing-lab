@@ -1,7 +1,7 @@
 """Tests for run-aware event mapping.
 
 The key correctness concern for this dataset is that T1/T2 are interpreted by
-run type, not by event code alone (see docs/dataset_notes.md). These tests pin
+run type, not by event code alone (see README dataset section). These tests pin
 the run-aware mapping implemented in v0.2 for the version 1 slice.
 """
 

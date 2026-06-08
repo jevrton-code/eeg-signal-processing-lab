@@ -18,7 +18,7 @@ Status
 ------
 Version 0.3. The conservative preprocessing pipeline is now implemented:
 standard montage, a gentle 1-40 Hz band-pass, and an explicit average reference
-(see ``docs/preprocessing_decisions.md`` for parameters and rationale). ICA
+(see the README pipeline section and generated report for parameters and rationale). ICA
 remains deliberately deferred. This module also builds cue-locked epochs from
 the run-aware event mapping and provides pure helpers for the event-count
 tables. Bad-channel handling stays manual/flagged (not automated) by design.
@@ -85,7 +85,7 @@ def apply_basic_preprocessing(
     """Apply the conservative montage / band-pass / reference pipeline, in place.
 
     The steps, in order, are deliberately simple and transparent (see
-    ``docs/preprocessing_decisions.md`` for the full rationale):
+    the README pipeline section and generated report for the full rationale):
 
     1. **Montage** (``standard_1005``) so electrodes have known positions.
     2. **Band-pass filter** (default 1-40 Hz, FIR). Removes slow drifts and

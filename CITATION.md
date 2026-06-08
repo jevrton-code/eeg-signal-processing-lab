@@ -97,17 +97,17 @@ If you use this repository, please cite the underlying dataset and tooling. The
 
 ## How to cite this repository
 
-> *eeg-signal-processing-lab* (v0.1.0). A reproducible EEG signal-processing lab
+> *eeg-signal-processing-lab* (v1.0.0). A reproducible EEG signal-processing lab
 > using the PhysioNet EEG Motor Movement/Imagery Dataset and MNE-Python.
-> https://github.com/eeg-signal-processing-lab/eeg-signal-processing-lab
+> https://github.com/jevrton-code/eeg-signal-processing-lab
 
 ```bibtex
 @software{eeg_signal_processing_lab,
   author  = {{eeg-signal-processing-lab contributors}},
   title   = {eeg-signal-processing-lab: A reproducible EEG signal-processing lab},
-  version = {0.1.0},
+  version = {1.0.0},
   year    = {2026},
-  url      = {https://github.com/eeg-signal-processing-lab/eeg-signal-processing-lab}
+  url      = {https://github.com/jevrton-code/eeg-signal-processing-lab}
 }
 ```
 
@@ -122,7 +122,7 @@ These licenses are **independent** and must not be conflated:
 
 | Component | License |
 | --- | --- |
-| **This repository's code** (the `eeg_lab` package, scripts, docs) | [MIT License](LICENSE) |
+| **This repository's code** (the `eeg_lab` package, notebooks, reports, and documentation) | [MIT License](LICENSE) |
 | **The EEG Motor Movement/Imagery Dataset** | Open Data Commons Attribution License v1.0 (ODC-By), via PhysioNet |
 
 The MIT license covers only the code and documentation in this repository. It

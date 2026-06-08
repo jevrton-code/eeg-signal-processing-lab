@@ -120,7 +120,7 @@ def _preprocessing_html() -> str:
     <p>Cue-locked window <code>tmin={config.EPOCH_TMIN_S} s</code>,
     <code>tmax={config.EPOCH_TMAX_S} s</code>, baseline
     <code>{config.EPOCH_BASELINE}</code>, EEG picks only, run-aware condition
-    labels. See <code>docs/preprocessing_decisions.md</code> for full rationale.</p>
+    labels. Rationale is summarized in the README pipeline section and this report.</p>
     """
 
 
