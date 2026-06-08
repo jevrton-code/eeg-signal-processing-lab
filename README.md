@@ -163,7 +163,7 @@ pandas, Matplotlib, SciPy, and Jupyter.
 
 ```bash
 # 1. Clone
-git clone https://github.com/eeg-signal-processing-lab/eeg-signal-processing-lab.git
+git clone https://github.com/jevrton-code/eeg-signal-processing-lab.git
 cd eeg-signal-processing-lab
 
 # 2. Create and activate a virtual environment
