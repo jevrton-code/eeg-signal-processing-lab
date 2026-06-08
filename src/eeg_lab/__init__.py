@@ -6,14 +6,23 @@ movement/imagery data using MNE-Python.
 
 Status
 ------
-Version 0.1 is scaffolding only. The modules in this package currently expose
-their intended public surface as documented stubs. No analysis pipeline logic
-is implemented yet; see ``ROADMAP.md`` for the planned implementation stages.
+Version 0.2 implements the loading, montage, run-aware event mapping, and
+inspection-figure helpers used by the first reproducible notebook. Preprocessing
+(filtering/reference/ICA), epoching, and PSD/report generation remain deferred
+to later stages; see ``ROADMAP.md``.
 
 This project is an educational, exploratory signal-processing lab. It is not a
 clinical or diagnostic tool and makes no medical claims.
 """
 
-__version__ = "0.1.0"
+from . import config, data, preprocessing, visualization
 
-__all__ = ["__version__"]
+__version__ = "0.2.0"
+
+__all__ = [
+    "__version__",
+    "config",
+    "data",
+    "preprocessing",
+    "visualization",
+]

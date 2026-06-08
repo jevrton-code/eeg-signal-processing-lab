@@ -6,17 +6,23 @@ adds reproducible analysis stage by stage, keeping scope tight.
 
 ## Current status
 
-- **v0.1 — scaffolding / foundation: ✅ complete (this release).**
+- **v0.1 — scaffolding / foundation: ✅ complete.**
   Repository structure, documentation, dependency manifest, citation, license,
-  and roadmap. No analysis pipeline yet; `src/eeg_lab/` modules are documented
-  stubs.
+  and roadmap.
+- **v0.2 — first reproducible notebook: ✅ complete (this release).**
+  `notebooks/01_eeg_signal_processing_lab.ipynb` loads subjects 1–3, runs
+  1, 2, 4, 8, 12 via MNE's EEGBCI helper, confirms 64 EEG channels @ 160 Hz and
+  per-run durations, maps T0/T1/T2 **by run type**, and exports first inspection
+  figures to `figures/`. The `config`, `data`, `preprocessing` (montage +
+  run-aware events), and `visualization` modules are now implemented for this
+  stage; filtering/reference/ICA, epoching, and PSD remain stubbed/deferred.
 
 ## Versioning plan
 
 | Version | Theme | Contents |
 | --- | --- | --- |
-| **v0.1** | Structure & docs | Repo skeleton, README, dataset notes, citation, license, roadmap, stubs. **(current)** |
-| **v0.2** | First reproducible notebook | Load selected files via MNE EEGBCI, inspect raw signals, first figures. |
+| **v0.1** | Structure & docs | Repo skeleton, README, dataset notes, citation, license, roadmap, stubs. |
+| **v0.2** | First reproducible notebook | Load selected files via MNE EEGBCI, inspect raw signals, first figures. **(current)** |
 | **v0.3** | Preprocessing & events/epochs | Conservative preprocessing applied + documented, run-aware event mapping, epochs, event-count tables. |
 | **v1.0** | Polished release | PSD/frequency summaries, HTML report, curated figures, finalized limitations, GitHub-ready README. |
 
@@ -34,9 +40,12 @@ event mapping table. See `docs/dataset_notes.md`.
 Repository skeleton, dependency plan (`pyproject.toml` / `requirements.txt`),
 citation and license files. Data folders ignored; no raw data committed.
 
-### M3 — Signal inspection ⏳ (v0.2)
+### M3 — Signal inspection ✅ (v0.2)
 Load selected recordings through MNE, produce a raw signal preview, and
-summarize the channel layout.
+summarize the channel layout. Delivered in
+`notebooks/01_eeg_signal_processing_lab.ipynb` with figures in `figures/`
+(`raw_signal_preview.png`, `channel_layout.png`, `event_distribution.png`,
+`events_timeline_subject1_run4.png`).
 
 ### M4 — Preprocessing ⏳ (v0.3)
 Define and apply conservative preprocessing (montage, reference, filtering),

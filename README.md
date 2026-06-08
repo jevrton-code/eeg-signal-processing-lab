@@ -5,7 +5,7 @@
 > preprocessing, epoching, and spectral analysis as a foundation for future
 > brain–computer interface (BCI) and neurotechnology work.
 
-![Status](https://img.shields.io/badge/status-v0.1%20scaffolding-orange)
+![Status](https://img.shields.io/badge/status-v0.2%20first%20notebook-yellowgreen)
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![Stack](https://img.shields.io/badge/stack-MNE--Python-7A4FE0)
 ![License](https://img.shields.io/badge/code%20license-MIT-green)
@@ -13,14 +13,32 @@
 
 ## Project Status
 
-**Version 0.1 — scaffolding / foundation.** This release contains the project
-structure, documentation, dependency manifest, citation, and roadmap. **The
-analysis pipeline is not yet implemented.** Source modules under `src/eeg_lab/`
-are documented stubs; the first reproducible notebook arrives in v0.2. See
-[`ROADMAP.md`](ROADMAP.md) for the staged plan.
+**Version 0.2 — first reproducible notebook.** Building on the v0.1 scaffolding,
+this release adds the first end-to-end analysis:
+[`notebooks/01_eeg_signal_processing_lab.ipynb`](notebooks/01_eeg_signal_processing_lab.ipynb)
+loads subjects 1–3 (runs 1, 2, 4, 8, 12) via MNE's EEGBCI helper, confirms the
+dataset facts (64 EEG channels @ 160 Hz, per-run durations), maps the T0/T1/T2
+annotations **by run type**, and exports inspection figures to
+[`figures/`](figures/). The `eeg_lab` `config`, `data`, `preprocessing`
+(montage + run-aware events), and `visualization` modules are implemented for
+this stage. Conservative preprocessing (filtering/reference/ICA), epoching, and
+PSD/frequency analysis remain deferred — see [`ROADMAP.md`](ROADMAP.md).
 
 This is an educational, exploratory signal-processing project. **It is not a
 clinical or diagnostic tool and makes no medical claims.**
+
+### Run the first notebook
+
+```bash
+# from an activated environment (see Setup below)
+jupyter nbconvert --to notebook --execute --inplace \
+  notebooks/01_eeg_signal_processing_lab.ipynb   # headless, end-to-end
+# or open it interactively:
+jupyter lab notebooks/01_eeg_signal_processing_lab.ipynb
+```
+
+The first execution downloads ~15 small EDF files into the git-ignored
+`data/raw/` directory; later runs reuse the local cache.
 
 ## Why This Project
 
